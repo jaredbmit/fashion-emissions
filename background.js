@@ -17,8 +17,8 @@ var parameters = {
         "currency_units": "usd"
     },
     "SHEIN": {
-        "distance": 2000,
-        "mode": "sea",
+        "distance": 11646,
+        "mode": "air",
         "keyword_element": "gbCartSsrData",
         "keyword_price": '"totalPrice":{"amount":"'
     }
@@ -43,7 +43,7 @@ function scrapeCart(id) {
     console.log("Scrape cart")
 
     // Get keyword from storage sync data
-    var a = chrome.storage.sync.get(["site"], function(result) {
+    chrome.storage.sync.get(["site"], function(result) {
         console.log('Value currently is ' + result.site);
         var keyword_element = parameters[result.site]["keyword_element"];
         var keyword_price = parameters[result.site]["keyword_price"];
@@ -54,9 +54,7 @@ function scrapeCart(id) {
             args: [keyword_element, keyword_price],
         },
         (price) => {
-            console.log(price[0]["result"])
-            var carbon = calculateCarbon(price, result.site);
-            chrome.storage.sync.set({"emissions": carbon});
+            var carbon = calculateCarbon(Number(price[0]["result"]), result.site);
         });
 
     });
@@ -77,9 +75,34 @@ function scrapeSourceCode(keyword_element, keyword_price) {
     return price;
 }
 
-function returnData(data) {
-  var out = data.json().then(function(res){out = res.co2e;console.log(out)}, (error)=>{error})
-  return out
+function UpstreamData(data) {
+    var out = data.json().then(function(res) {
+        out = res.co2e;
+        console.log(out);
+        chrome.storage.sync.set({"upstream": out});
+    }, 
+    (error)=>{error});
+    return out
+}
+
+function ShippingData(data) {
+    var out = data.json().then(function(res) {
+        out = res.co2e;
+        console.log(out);
+        chrome.storage.sync.set({"shipping": out});
+    }, 
+    (error)=>{error});
+    return out
+}
+
+function WasteData(data) {
+    var out = data.json().then(function(res) {
+        out = res.co2e;
+        console.log(out);
+        chrome.storage.sync.set({"waste": out});
+    }, 
+    (error)=>{error});
+    return out
 }
 
 // Put together full stack of data to be queried
@@ -89,21 +112,12 @@ function calculateCarbon(price, site) {
     var distance = parameters[site]["distance"];
     var weight = estimateWeight(price);
 
-    let co_clothes = getCarbonClothes(price,currency).then(function(result){co_clothes=result,returnData(co_clothes)},(error)=>{error});
-    let co_seafreight = getCarbonSeaFreight(weight, distance).then(function(result){co_seafreight=result;returnData(co_seafreight)},(error)=>{error});
-    let co_airfreight = getCarbonAirFreight(weight, distance).then(function(result){co_airfreight=result;returnData(co_airfreight)}, (error) => {error})
-    let co_roadfreight = getCarbonRoadFreight(weight, distance).then(function(result){co_roadfreight=result;returnData(co_roadfreight)}, (error) => {error})
-    let co_garbage = getCarbonWaste(weight).then(function(result){co_garbage=result;returnData(co_roadfreight)}, (error) => {error})
+    let co_clothes = getCarbonClothes(price,currency).then(function(result){co_clothes=result,UpstreamData(co_clothes, "upstream")},(error)=>{error});
+    let co_seafreight = getCarbonSeaFreight(weight, distance).then(function(result){co_seafreight=result;ShippingData(co_seafreight, "shipping")},(error)=>{error});
+    let co_airfreight = getCarbonAirFreight(weight, distance).then(function(result){co_airfreight=result;ShippingData(co_airfreight, "shipping")}, (error) => {error});
+    let co_roadfreight = getCarbonRoadFreight(weight, distance).then(function(result){co_roadfreight=result;ShippingData(co_roadfreight, "shipping")}, (error) => {error});
+    let co_garbage = getCarbonWaste(weight).then(function(result){co_garbage=result;WasteData(co_garbage, "waste")}, (error) => {error});
 
-    if (parameters[site]["mode"] === "sea") {
-        return {"clothes": co_clothes, "shipping": co_seafreight, "waste": co_garbage}
-    } else if (parameters[site]["mode"] === "road") {
-        return {"clothes": co_clothes, "shipping": co_roadfreight, "waste": co_garbage}
-    } else if (parameters[site]["mode"] === "air") {
-        return {"clothes": co_clothes, "shipping": co_airfreight, "waste": co_garbage}
-    } else {
-        return -1;
-    }
 }
 
 function estimateWeight(cost) {
