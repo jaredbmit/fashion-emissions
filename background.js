@@ -36,19 +36,6 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
-// // When stored cart data changes -- after page scraping
-// chrome.storage.onChanged.addListener(function (changes, namespace) {
-//     for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
-//         if (key === "emissions") {
-//             if (newValue) {
-//                 console.log("Emissions Cost: ", newValue);
-//             } else {
-//                 console.log("Invalid Return");
-//             }
-//         }
-//     }
-// });
-
 // ---- Helper functions ---- //
 
 function scrapeCart(id) {
@@ -109,11 +96,11 @@ function calculateCarbon(price, site) {
     let co_garbage = 10;
 
     if (parameters[site]["mode"] === "sea") {
-        return co_clothes + co_seafreight + co_garbage;
+        return {"clothes": co_clothes, "shipping": co_seafreight, "waste": co_garbage}
     } else if (parameters[site]["mode"] === "road") {
-        return co_clothes + co_airfreight + co_garbage;
+        return {"clothes": co_clothes, "shipping": co_roadfreight, "waste": co_garbage}
     } else if (parameters[site]["mode"] === "air") {
-        return co_clothes + co_roadfreight + co_garbage;
+        return {"clothes": co_clothes, "shipping": co_airfreight, "waste": co_garbage}
     } else {
         return -1;
     }

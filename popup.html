@@ -29,12 +29,12 @@
     </tr>
   </thead>
 
-  <tbody>
-    <tr>
-      <th scope="col"> This Item </th>
-        <td style="--size: calc(20 / 85 ); --color: orangered"> <span class="data"> Flight: 20 </span> </td>
-        <td style="--size: calc(30 / 85 ); --color: orange"> <span class="data"> Prod: 30 </span> </td>
-        <td style="--size: calc(10 / 85 ); --color: lightcoral"> <span class="data"> Truck: 10 </span> </td>
+  <tbody id="tbody">
+    <tr id="tr">
+      <th scope="col" id="th"> This Item </th>
+        <td style="--size: calc(20 / 85 ); --color: orangered" id="cost"> <span class="data"> Flight: 20 </span> </td>
+        <td style="--size: calc(30 / 85 ); --color: orange" id="shipping"> <span class="data"> Prod: 30 </span> </td>
+        <td style="--size: calc(10 / 85 ); --color: lightcoral" id="waste"> <span class="data"> Truck: 10 </span> </td>
     </tr>
     <tr>
         <th scope="col">Avg. Item</th>
@@ -46,6 +46,30 @@
 
 </table>
 </div>
+
+<script>
+    window.onload = function() {
+        chrome.storage.onChanged.addListener(function (changes, namespace) {
+            for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+                if (key === "emissions") {
+                    if (newValue) {
+                        var main_bar = document.getElementById('main_bar');
+                        var tbody = main_bar.getElementById('tbody');
+                        var tr = tbody.getElementById('tr');
+                        var th = tr.getElementById('th');
+                        var td_cost = th.getElementById('cost');
+                        var td_shipping = th.getElementById('shipping');
+                        var td_waste = th.getElementById('waste');
+
+                        td_cost.UPDATEVAL ?? newValue["cost"];
+                        --
+                        --
+                    }
+                }
+            }
+        });
+    }
+</script>
 
 <!-- <div><canvas id="myChart" ></canvas></div> -->
 
