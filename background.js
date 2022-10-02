@@ -78,7 +78,7 @@ function scrapeSourceCode(keyword_element, keyword_price) {
 function UpstreamData(data) {
     var out = data.json().then(function(res) {
         out = res.co2e;
-        console.log(out);
+        console.log("Upstream: ", out);
         chrome.storage.sync.set({"upstream": out});
     }, 
     (error)=>{error});
@@ -88,7 +88,7 @@ function UpstreamData(data) {
 function ShippingData(data) {
     var out = data.json().then(function(res) {
         out = res.co2e;
-        console.log(out);
+        console.log("Shipping: ", out);
         chrome.storage.sync.set({"shipping": out});
     }, 
     (error)=>{error});
@@ -98,7 +98,7 @@ function ShippingData(data) {
 function WasteData(data) {
     var out = data.json().then(function(res) {
         out = res.co2e;
-        console.log(out);
+        console.log("Waste: ", out);
         chrome.storage.sync.set({"waste": out});
     }, 
     (error)=>{error});
@@ -113,11 +113,14 @@ function calculateCarbon(price, site) {
     var weight = estimateWeight(price);
 
     let co_clothes = getCarbonClothes(price,currency).then(function(result){co_clothes=result,UpstreamData(co_clothes, "upstream")},(error)=>{error});
-    let co_seafreight = getCarbonSeaFreight(weight, distance).then(function(result){co_seafreight=result;ShippingData(co_seafreight, "shipping")},(error)=>{error});
-    let co_airfreight = getCarbonAirFreight(weight, distance).then(function(result){co_airfreight=result;ShippingData(co_airfreight, "shipping")}, (error) => {error});
-    let co_roadfreight = getCarbonRoadFreight(weight, distance).then(function(result){co_roadfreight=result;ShippingData(co_roadfreight, "shipping")}, (error) => {error});
     let co_garbage = getCarbonWaste(weight).then(function(result){co_garbage=result;WasteData(co_garbage, "waste")}, (error) => {error});
-
+    if (parameters[site]["mode"] === "sea") {
+        let co_seafreight = getCarbonSeaFreight(weight, distance).then(function(result){co_seafreight=result;ShippingData(co_seafreight, "shipping")},(error)=>{error});
+    } else if (parameters[site]["mode"] === "air")  {
+        let co_airfreight = getCarbonAirFreight(weight, distance).then(function(result){co_airfreight=result;ShippingData(co_airfreight, "shipping")}, (error) => {error});
+    } else if (parameters[site]["mode"] === "land") {
+        let co_roadfreight = getCarbonRoadFreight(weight, distance).then(function(result){co_roadfreight=result;ShippingData(co_roadfreight, "shipping")}, (error) => {error});
+    }
 }
 
 function estimateWeight(cost) {
