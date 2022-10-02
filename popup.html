@@ -31,16 +31,16 @@
 
   <tbody id="tbody">
     <tr id="tr">
-      <th scope="col" id="th"> This Item </th>
+      <th scope="col" id="th"> This Purchase </th>
         <td style="--size: calc(20 / 85 ); --color: orangered" id="cost_bar"> <span class="data" id="cost_label"> Flight: 20 </span> </td>
         <td style="--size: calc(30 / 85 ); --color: orange" id="shipping_bar"> <span class="data" id="shipping_label"> Prod: 30 </span> </td>
         <td style="--size: calc(10 / 85 ); --color: lightcoral" id="waste_bar"> <span class="data" id="waste_label"> Truck: 10 </span> </td>
     </tr>
     <tr>
-        <th scope="col">Avg. Item</th>
-        <td style="--size: calc(10 / 85 ); --color:green"> <span class="data"> Flight: 10 </span> </td>
-        <td style="--size: calc(5 / 85 ); --color:olivedrab"> <span class="data"> Prod: 5 </span> </td>
-        <td style="--size: calc(10 / 85 ); --color:palegreen"> <span class="data"> Truck: 10 </span> </td>
+        <th scope="col">Avg. Purchase</th>
+        <td style="--size: calc(10 / 85 ); --color:green" id="avg_cost_bar"> <span class="data" id="avg_cost_label"> Flight: 10 </span> </td>
+        <td style="--size: calc(5 / 85 ); --color:olivedrab" id="avg_shipping_bar"> <span class="data" id="avg_shipping_label"> Prod: 5 </span> </td>
+        <td style="--size: calc(10 / 85 ); --color:palegreen" id="avg_waste_bar"> <span class="data" id="avg_waste_label"> Truck: 10 </span> </td>
     </tr>
   </tbody>
 
@@ -48,8 +48,6 @@
 </div>
 
 <script src="popup.js"></script>
-
-<div><canvas id="myChart" ></canvas></div>
 
 </body>
 </html> 
