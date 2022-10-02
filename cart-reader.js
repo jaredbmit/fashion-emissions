@@ -1,4 +1,4 @@
 chrome.runtime.sendMessage({
-    type: "cart",
-    data: {}
+    type: "tab",
+    site: "SHEIN"
 });

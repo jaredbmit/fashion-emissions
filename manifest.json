@@ -3,7 +3,11 @@
     "description": "HackMIT",
     "version": "1.0",
     "manifest_version": 3,
-    "permissions": ["storage", "scripting"],
+    "permissions": ["storage", "scripting", "tabs", "activeTab"],
+    "host_permissions": [
+        "http://*/*",
+        "https://*/*"
+      ],
     "background": {
         "service_worker": "background.js"
     },
