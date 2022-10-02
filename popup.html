@@ -19,7 +19,7 @@
 
 <!-- <img src="fashion.png" alt="shirt" style="width:100%"> -->
 
-<table width="400" height="400" class="charts-css column multiple stacked show-labels show-data-on-hover" id="main_bar">
+<table width="400" height="400" class="charts-css column multiple show-labels show-data-on-hover" id="main_bar">
 
   <caption></caption>
 
@@ -32,18 +32,37 @@
   <tbody id="tbody">
     <tr id="tr">
       <th scope="col" id="th"> This Item </th>
-        <td style="--size: calc(20 / 85 ); --color: orangered" id="cost_bar"> <span class="data" id="cost_label"> Flight: 20 </span> </td>
-        <td style="--size: calc(30 / 85 ); --color: orange" id="shipping_bar"> <span class="data" id="shipping_label"> Prod: 30 </span> </td>
-        <td style="--size: calc(10 / 85 ); --color: lightcoral" id="waste_bar"> <span class="data" id="waste_label"> Truck: 10 </span> </td>
+        <td style="--size: calc(20 / 85 ); --color: orangered" id="cost_bar"> <span class="data" id="cost_label"> Carbon Cost </span> </td>
     </tr>
     <tr>
         <th scope="col">Avg. Item</th>
-        <td style="--size: calc(10 / 85 ); --color:green"> <span class="data"> Flight: 10 </span> </td>
-        <td style="--size: calc(5 / 85 ); --color:olivedrab"> <span class="data"> Prod: 5 </span> </td>
-        <td style="--size: calc(10 / 85 ); --color:palegreen"> <span class="data"> Truck: 10 </span> </td>
+        <td style="--size: calc(5 / 85 ); --color:olivedrab" id="avg_cost_bar"> <span class="data"> Carbon Cost </span> </td>
     </tr>
   </tbody>
 
+</table>
+<table class="charts-css bar show-data-on-hover" id="main_comp">
+  <caption></caption>
+  <thead>
+    <tr>
+      <th scope="row">CO2e</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <th scope="col">Production Cost</th>
+        <td style="--size: calc(20 / 85 ); --color: orangered" id="cost_ship"> <span class="data"></span> Shipping Cost </span> </td>
+    </tr>
+    <tr>
+      <th scope="col">Production Cost</th>
+        <td style="--size: calc(20 / 85 ); --color: orangered" id="cost_prod"> <span class="data"></span> Prod. Cost </span> </td>
+    </tr>
+    <tr>
+      <th scope="col">Production Cost</th>
+        <td style="--size: calc(20 / 85 ); --color: orangered" id="cost_waste"> <span class="data"></span> Waste Cost </span> </td>
+    </tr>
+  </tbody>
 </table>
 </div>
 
