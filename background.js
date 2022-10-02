@@ -7,7 +7,7 @@
 * Sends cart message to background.js
 */
 
-import {getCarbonAirFreight, getCarbonClothes, getCarbonRoadFreight, getCarbonSeaFreight} from './query.mjs'
+import {getCarbonAirFreight, getCarbonClothes, getCarbonRoadFreight, getCarbonSeaFreight, getCarbonWaste} from './query.mjs'
 //import parameters from './parameters.json' assert {type: 'json'};
 var parameters = {
     "GLOBAL": {
@@ -93,7 +93,7 @@ function calculateCarbon(price, site) {
     let co_seafreight = getCarbonSeaFreight(weight, distance).then(function(result){co_seafreight=result;returnData(co_seafreight)},(error)=>{error});
     let co_airfreight = getCarbonAirFreight(weight, distance).then(function(result){co_airfreight=result;returnData(co_airfreight)}, (error) => {error})
     let co_roadfreight = getCarbonRoadFreight(weight, distance).then(function(result){co_roadfreight=result;returnData(co_roadfreight)}, (error) => {error})
-    let co_garbage = 10;
+    let co_garbage = getCarbonWaste(weight).then(function(result){co_garbage=result;returnData(co_roadfreight)}, (error) => {error})
 
     if (parameters[site]["mode"] === "sea") {
         return {"clothes": co_clothes, "shipping": co_seafreight, "waste": co_garbage}

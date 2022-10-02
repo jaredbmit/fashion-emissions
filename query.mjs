@@ -107,6 +107,23 @@ export async function getCarbonRoadFreight(weight,distance){
     let resp = await getResponse(payload, AUTH_KEY)
     return resp
 }
+
+export async function getCarbonWaste(weight){
+
+    var payload = {
+        "emission_factor":{
+            "activity_id": "waste_type_books-disposal_method_closed_loop"
+        },
+        "parameters": {
+            "weight": weight,
+            "weight_unit": "kg"
+        }
+    }
+
+    let resp = await getResponse(payload, AUTH_KEY)
+    return resp
+}
+
 // let data;
 // let resp = getCarbonClothes(120,'eur');
 // // resp.then(function(result){data = result.data;console.log(data)});
