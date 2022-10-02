@@ -60,10 +60,13 @@
                         var td_cost = th.getElementById('cost');
                         var td_shipping = th.getElementById('shipping');
                         var td_waste = th.getElementById('waste');
-
-                        td_cost.UPDATEVAL ?? newValue["cost"];
-                        --
-                        --
+                        console.log("here") 
+                        // td_cost.innerHTML = `<td style="--size: calc(${newValue["cost"]} / 85 ); --color: orangered" id="cost"> <span class="data"> Prod: ${td_cost.UPDATEVAL ?? newValue["cost"]} </span> </td>`
+                        // td_shipping.innerHTML =`<td style="--size: calc(${newValue["shipping"]} / 85 ); --color: orange" id="cost"> <span class="data"> Flight: ${td_cost.UPDATEVAL ?? newValue["shipping"]} </span> </td>` 
+                        // td_shipping.innerHTML =`<td style="--size: calc(${newValue["waste"]} / 85 ); --color: orange" id="cost"> <span class="data"> Garbage: ${td_cost.UPDATEVAL ?? newValue["waste"]} </span> </td>` 
+                        td_cost.innerHTML = `<span class="data"> Cost: ${newValue["cost"]}</span>`
+                        td_shipping.innerHTML = `<span class="data"> Flight: ${newValue["shipping"]}</span>`
+                        td_waste.innerHTML = `<span class="data"> Waste: ${newValue["waste"]}</span>`
                     }
                 }
             }
