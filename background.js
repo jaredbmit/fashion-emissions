@@ -1,10 +1,16 @@
 console.log("Hello")
 
-chrome.storage.onChanged.addListener(function (changes, namespace) {
-  for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
-    console.log(
-      `Storage key "${key}" in namespace "${namespace}" changed.`,
-      `Old value was "${oldValue}", new value is "${newValue}".`
-    );
-  }
-});
+// Receive scraped data from cart
+chrome.runtime.onMessage.addListener(
+    function(msg, sender, sendResponse) {
+        if (msg.type === "cart") {
+            assembleParams(msg.data);
+            //sender.tab;
+        }
+    }
+);
+
+// Put together full stack of data to be queried
+function assembleParams(data) {
+    console.log("Data received")
+}

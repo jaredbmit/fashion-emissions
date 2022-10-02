@@ -3,14 +3,14 @@
     "description": "HackMIT",
     "version": "1.0",
     "manifest_version": 3,
-    "permissions": ["storage"],
+    "permissions": ["storage", "scripting"],
     "background": {
         "service_worker": "background.js"
     },
     "content_scripts": [
         {
         "matches": ["https://*.shein.com/cart"],
-        "js": ["content-script.js"]
+        "js": ["cart-reader.js"]
         }
     ]
 }
