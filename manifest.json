@@ -5,12 +5,12 @@
     "manifest_version": 3,
     "permissions": ["storage"],
     "background": {
-      "service_worker": "background.js"
+        "service_worker": "background.js"
     },
     "content_scripts": [
-      {
+        {
         "matches": ["https://*.shein.com/cart"],
         "js": ["content-script.js"]
-      }
+        }
     ]
-  }
+}
