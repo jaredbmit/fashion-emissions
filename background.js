@@ -8,26 +8,46 @@
 */
 
 import {getCarbonAirFreight, getCarbonClothes, getCarbonRoadFreight, getCarbonSeaFreight} from './query.mjs'
+//import parameters from './parameters.json' assert {type: 'json'};
+var parameters = {
+    "GLOBAL": {
+        "weight4price": 0.01,
+        "boxweight": 0.25,
+        "weight_units": "kg",
+        "currency_units": "usd"
+    },
+    "SHEIN": {
+        "distance": 2000,
+        "mode": "sea",
+        "keyword_element": "gbCartSsrData",
+        "keyword_price": '"totalPrice":{"amount":"'
+    }
+}
+
 console.log("Start")
 
 // Get notification when we're in a cart webpage
 chrome.runtime.onMessage.addListener(
     function(msg, sender, sendResponse) {
         if (msg.type === "tab") {
-            chrome.storage.sync.set({"site": msg.site, "display": 1});
+            chrome.storage.sync.set({"site": msg.site});
             scrapeCart(sender.tab.id);
         } 
     }
 );
 
-// When stored cart data changes -- after page scraping
-chrome.storage.onChanged.addListener(function (changes, namespace) {
-    for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
-        if (key === "cart") {
-            assembleParams(newValue);
-        }
-    }
-});
+// // When stored cart data changes -- after page scraping
+// chrome.storage.onChanged.addListener(function (changes, namespace) {
+//     for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+//         if (key === "emissions") {
+//             if (newValue) {
+//                 console.log("Emissions Cost: ", newValue);
+//             } else {
+//                 console.log("Invalid Return");
+//             }
+//         }
+//     }
+// });
 
 // ---- Helper functions ---- //
 
@@ -36,21 +56,38 @@ function scrapeCart(id) {
     console.log("Scrape cart")
 
     // Get keyword from storage sync data
-    var keyword = "asd";
+    var a = chrome.storage.sync.get(["site"], function(result) {
+        console.log('Value currently is ' + result.site);
+        var keyword_element = parameters[result.site]["keyword_element"];
+        var keyword_price = parameters[result.site]["keyword_price"];
 
-    function getSourceCode(keyword) {
-        var htmlCode = document.documentElement.outerHTML;
-        return htmlCode.search("cartlists:");
-    }
+        chrome.scripting.executeScript({
+            target: {tabId: id},
+            func: scrapeSourceCode,
+            args: [keyword_element, keyword_price],
+        },
+        (price) => {
+            console.log(price[0]["result"])
+            var carbon = calculateCarbon(price, result.site);
+            chrome.storage.sync.set({"emissions": carbon});
+        });
 
-    chrome.scripting.executeScript({
-        target: {tabId: id},
-        func: getSourceCode,
-        args: [keyword],
-    },
-    (cart_items) => {
-        chrome.storage.sync.set({"cart": cart_items});
     });
+}
+
+function scrapeSourceCode(keyword_element, keyword_price) {
+
+    var price;
+    var script_elements = document.getElementsByTagName("script");
+    for (script of script_elements) {
+        if (script.outerHTML.search(keyword_element) != -1) {
+            price_start_idx = script.outerHTML.search(keyword_price) + keyword_price.length;
+            cart = script.outerHTML.slice(price_start_idx, price_start_idx + 15);
+            price_stop_idx = price_start_idx + script.outerHTML.slice(price_start_idx, price_start_idx+7).indexOf('"');
+            price = script.outerHTML.slice(price_start_idx, price_stop_idx);
+        }
+    }
+    return price;
 }
 
 function returnData(data) {
@@ -59,16 +96,32 @@ function returnData(data) {
 }
 
 // Put together full stack of data to be queried
-function assembleParams(data) {
+function calculateCarbon(price, site) {
 
-    console.log("Data received")
-    var price = 100 
-    var currency = 'usd' 
-    var distance = 5000 
-    var weight = 19
+    var currency = parameters["GLOBAL"]["currency_units"];
+    var distance = parameters[site]["distance"];
+    var weight = estimateWeight(price);
 
     let co_clothes = getCarbonClothes(price,currency).then(function(result){co_clothes=result,returnData(co_clothes)},(error)=>{error});
     let co_seafreight = getCarbonSeaFreight(weight, distance).then(function(result){co_seafreight=result;returnData(co_seafreight)},(error)=>{error});
     let co_airfreight = getCarbonAirFreight(weight, distance).then(function(result){co_airfreight=result;returnData(co_airfreight)}, (error) => {error})
     let co_roadfreight = getCarbonRoadFreight(weight, distance).then(function(result){co_roadfreight=result;returnData(co_roadfreight)}, (error) => {error})
+    let co_garbage = 10;
+
+    if (parameters[site]["mode"] === "sea") {
+        return co_clothes + co_seafreight + co_garbage;
+    } else if (parameters[site]["mode"] === "road") {
+        return co_clothes + co_airfreight + co_garbage;
+    } else if (parameters[site]["mode"] === "air") {
+        return co_clothes + co_roadfreight + co_garbage;
+    } else {
+        return -1;
+    }
+}
+
+function estimateWeight(cost) {
+    // 0.4 kg / $40 for an average pair of jeans
+    // --> 1 kg for every $100 purchased
+    // + 0.27 kg for average shipping box
+    return cost * parameters["GLOBAL"]["weight4price"] + parameters["GLOBAL"]["boxweight"]
 }
